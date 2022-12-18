@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./App.css";
-
 import WeatherNew from "./WeatherNew";
+import WeatherForecast from "./WeatherForecast";
+
 export default function WeatherUpdate(props) {
-  const [city, setCity] = useState(props.deafultCity);
-  const [weatherData, setWeatherData] = useState({ loaded: false });
+  const [city, setCity] = useState(props.defaultCity);
+  const [weatherData, setWeatherData] = useState({ ready: false });
+
   function handleResponse(response) {
     console.log(response.data);
     setWeatherData({
-      loaded: true,
+      ready: true,
+      coordinates: response.data.coord,
       temp: response.data.main.temp,
       humidity: response.data.main.humidity,
       date: new Date(response.data.dt * 1000),
@@ -34,7 +37,7 @@ export default function WeatherUpdate(props) {
   function handleCityChange(event) {
     setCity(event.target.value);
   }
-  if (weatherData.loaded) {
+  if (weatherData.ready) {
     return (
       <div className="Weather">
         <form onSubmit={handleSubmit}>
@@ -42,12 +45,14 @@ export default function WeatherUpdate(props) {
             <div className="col-9">
               <input
                 type="search"
-                placeholder="Enter a city"
+                placeholder=" "
                 className="form-control"
                 autoFocus="yes"
                 onChange={handleCityChange}
               />
+              <label for="search">Type the city</label>
             </div>
+
             <div className="col-3">
               <input
                 type="submit"
@@ -58,6 +63,7 @@ export default function WeatherUpdate(props) {
           </div>
         </form>
         <WeatherNew data={weatherData} />
+        <WeatherForecast coordinates={weatherData.coordinates} />
       </div>
     );
   } else {
